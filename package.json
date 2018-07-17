@@ -1,0 +1,36 @@
+{
+  "name": "dialogflow-adafruit-forwarder",
+  "version": "1.0.0",
+  "description": "This application forwards webhook requests from dialogflow to adafruit.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "author": "Livio Brunner <livio.brunner.lb1@roche.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "chalk": "^2.4.1",
+    "figlet": "^1.2.0",
+    "koa": "^2.5.2",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0",
+    "node-emoji": "^1.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BRUNNEL6/dialogflow-adafruit-forwarder.git"
+  },
+  "keywords": [
+    "adafruit",
+    "dialogflow"
+  ],
+  "bugs": {
+    "url": "https://github.com/BRUNNEL6/dialogflow-adafruit-forwarder/issues"
+  },
+  "homepage": "https://github.com/BRUNNEL6/dialogflow-adafruit-forwarder#readme"
+}
