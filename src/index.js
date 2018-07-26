@@ -9,7 +9,8 @@ const username = process.env.ADAFRUIT_USERNAME;
 const key = process.env.ADAFRUIT_KEY;
 const port = process.env.PORT || 3000;
 const noEmoji = process.env.NO_EMOJI || false;
-if (noEmoji) emoji.get = () => '';
+const feedId = process.env.ADAFRUIT_FEED_ID;
+if (noEmoji === 'true' || noEmoji === true) emoji.get = () => '';
 
 const printLine = () => {
     for (let i = 0; i < 47; i++) {
@@ -42,7 +43,7 @@ app.use(bodyParser());
 if (!key) return console.error('You must set the env variable "ADAFRUIT_KEY"');
 if (!username) return console.error('You must set the env variable "ADAFRUIT_USERNAME"');
 
-const url = `https://io.adafruit.com/api/v2/${username}/feeds/google-openstack/data`;
+const url = `https://io.adafruit.com/api/v2/${username}/feeds/${feedId}/data`;
 
 app.use(async (ctx, next) => {
     ctx.body = ctx.request.body
