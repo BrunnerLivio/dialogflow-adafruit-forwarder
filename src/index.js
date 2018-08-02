@@ -1,5 +1,6 @@
 const emoji = require('node-emoji');
 const Koa = require('koa');
+const cors = require('@koa/cors');
 const Router = require('koa-router');
 const Axios = require('axios');
 const bodyParser = require('koa-bodyparser');
@@ -36,6 +37,7 @@ printTitle();
 const koa = new Koa();
 const app = new Router();
 
+app.use(cors());
 app.use(bodyParser());
 
 
