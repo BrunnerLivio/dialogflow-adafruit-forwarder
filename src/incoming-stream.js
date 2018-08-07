@@ -18,20 +18,21 @@ class IncomingStream {
             username,
             key,
             host,
-            port
+            port,
+            id: feedIdIn
         });
     }
 
     connect() {
-        this.stream.connect(feedIdIn);
+        this.stream.connect();
     }
 
     onMessage() {
         return rxjs.Observable.create(observer => {
             this.stream.on('message', data => {
                 const parsedData = JSON.parse(data.toString('utf8'));
-                logInfo('Received message ' + parsedData);
-                observer.next(parsedData.data.value);
+                logInfo('Received message ' + JSON.stringify(parsedData));
+                observer.next(JSON.parse(parsedData.data.value));
             });
         });
     }
