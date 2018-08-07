@@ -1,32 +1,19 @@
-const emoji = require('node-emoji');
+
 const Koa = require('koa');
 const cors = require('@koa/cors');
 const Router = require('koa-router');
+const json = require('koa-json');
 const Axios = require('axios');
 const bodyParser = require('koa-bodyparser');
+const emoji = require('node-emoji');
 const Chalk = require('chalk');
+const printTitle = require('./printTitle');
+const IncomingStream = require('./incoming-stream');
 
 const username = process.env.ADAFRUIT_USERNAME;
 const key = process.env.ADAFRUIT_KEY;
 const port = process.env.PORT || 3000;
-const noEmoji = process.env.NO_EMOJI || false;
-const feedId = process.env.ADAFRUIT_FEED_ID;
-if (noEmoji === 'true' || noEmoji === true) emoji.get = () => '';
-
-const printLine = () => {
-    for (let i = 0; i < 47; i++) {
-        process.stdout.write(emoji.get('coffee') + ' ');
-    }
-    process.stdout.write('\n');
-};
-
-const printTitle = () => {
-    process.stdout.write('\n');
-    printLine();
-    console.log(require('figlet').textSync('Dialogflow Adafruit'));
-    printLine();
-    process.stdout.write('\n');
-};
+const feedIdOut = process.env.ADAFRUIT_FEED_ID_OUT;
 
 const logInfo = (...args) => console.log(`${emoji.get('information_source')} ` + args);
 const logSuccess = (...args) => console.log(`${emoji.get('rocket')} ` + args);
@@ -39,13 +26,17 @@ const app = new Router();
 
 app.use(cors());
 app.use(bodyParser());
-
-
+app.use(json());
 
 if (!key) return console.error('You must set the env variable "ADAFRUIT_KEY"');
 if (!username) return console.error('You must set the env variable "ADAFRUIT_USERNAME"');
 
-const url = `https://io.adafruit.com/api/v2/${username}/feeds/${feedId}/data`;
+const url = `https://io.adafruit.com/api/v2/${username}/feeds/${feedIdOut}/data`;
+
+
+const stream = new IncomingStream();
+logInfo(`Connecting to stream`);
+stream.connect();
 
 app.use(async (ctx, next) => {
     ctx.body = ctx.request.body
@@ -70,8 +61,12 @@ app.post('/', async ctx => {
     } catch (ex) {
         logError(`Could not send data`, ex);
     }
-
+    logInfo('Waiting for message');
+    const message = await stream.waitForNextMessage();
+    logInfo(`Received message ${message}`);
     ctx.response.res.statusCode = 200;
+    ctx.body = { fulfillmentText: message };
+
 });
 
 koa.use(app.routes());

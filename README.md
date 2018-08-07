@@ -18,13 +18,13 @@ npm start
 
 ```bash
 
+mv default.env cred.env
+vi cred.env
 docker build -t $USER/dialogflow-adafruit-forwarder .
 docker run \
-  -e ADAFRUIT_KEY=<KEY> \
-  -e ADAFRUIT_USERNAME=<USERNAME> \
-  -e ADAFRUIT_FEED_ID=<USERNAME> \
+  --env-file ./cred.env \
   -p 3000:3000 \
-  -ti brunnel6/dialogflow-adafruit-forwarder
+  -ti $USER/dialogflow-adafruit-forwarder
 
 ```
 
