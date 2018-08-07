@@ -41,7 +41,7 @@ class IncomingStream {
         return new Promise((resolve, reject) => {
             const observ = this.onMessage();
             observ.subscribe(data => {
-                if (data.requestId === request) {
+                if (data.requestId === requestId) {
                     resolve(data);
                 }
             });
