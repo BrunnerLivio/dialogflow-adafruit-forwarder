@@ -12,6 +12,8 @@ const port = 8883;
 
 
 class IncomingStream {
+    messageStore = [];
+    listenerStore = [];
     constructor() {
         this.stream = new Stream({
             type: 'feeds',
@@ -23,15 +25,30 @@ class IncomingStream {
         });
     }
 
-    connect() {
-        this.stream.connect();
+    _getListeneterByRequestId(requestId) {
+        this.listenerStore.filter(listener => listener.requestId === requestId)
     }
 
-    onMessage() {
+    _emitToListeners() {
+        this.messageStore.forEach((message, index) => {
+            logInfo(`Message found for ${message.requestId}`);
+            this._getListeneterByRequestId(message.requestId)
+                .resolve(message);
+            this.messageStore.splice(index, 1);
+        });
+    }
+
+    connect() {
+        this.stream.connect();
+        this.listen().subscribe(() => this._emitToListeners());;
+    }
+
+    listen() {
         return rxjs.Observable.create(observer => {
             this.stream.on('message', data => {
                 const parsedData = JSON.parse(data.toString('utf8'));
                 logInfo('Received message ' + JSON.stringify(parsedData));
+                this.messageStore.push(JSON.parse(parsedData.data.value));
                 observer.next(JSON.parse(parsedData.data.value));
             });
         });
@@ -39,12 +56,7 @@ class IncomingStream {
 
     async waitForNextMessage(requestId) {
         return new Promise((resolve, reject) => {
-            const observ = this.onMessage();
-            observ.subscribe(data => {
-                if (data.requestId === requestId) {
-                    resolve(data);
-                }
-            });
+            this.listenerStore.push({ requestId, resolve, reject });
         });
 
     }
