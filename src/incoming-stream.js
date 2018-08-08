@@ -39,8 +39,16 @@ class IncomingStream {
     }
 
     connect() {
-        this.stream.connect();
-        this.listen().subscribe(() => this._emitToListeners());;
+        setInterval(() => this._emitToListeners(), 1000);
+        return new Promise((resolve, reject) => {
+            this.stream.connect();
+            this.stream.on('connected', () => {
+                logSuccess(`Connected to stream`);
+                logInfo(`Listening to stream`);
+                this.listen().subscribe(() => this._emitToListeners());;
+                resolve()
+            });
+        });
     }
 
     listen() {

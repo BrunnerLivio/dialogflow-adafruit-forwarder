@@ -1,6 +1,7 @@
 const Axios = require('axios');
 const uuidv4 = require('uuid/v4');
 const IncomingStream = require('./incoming-stream');
+const { logInfo, logSuccess } = require('./logger');
 
 const username = process.env.ADAFRUIT_USERNAME;
 const key = process.env.ADAFRUIT_KEY;
@@ -8,11 +9,6 @@ const feedIdOut = process.env.ADAFRUIT_FEED_ID_OUT;
 
 const url = `https://io.adafruit.com/api/v2/${username}/feeds/${feedIdOut}/data`;
 const stream = new IncomingStream();
-const { logInfo, logSuccess, logErrorAndExit } = require('./logger');
-
-
-stream.connect();
-logSuccess(`Listening to stream`);
 
 const generateMessage = ctx => {
     const requestId = uuidv4();
@@ -59,4 +55,9 @@ const forwardMessage = async ctx => {
     ctx.body = { fulfillmentText: incomingMessage.data };
 };
 
-module.exports = forwardMessage;
+module.exports = {
+    async init() {
+        await stream.connect();
+        return forwardMessage;
+    }
+};
