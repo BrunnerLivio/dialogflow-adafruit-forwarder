@@ -12,9 +12,9 @@ const port = 8883;
 
 
 class IncomingStream {
-    messageStore = [];
-    listenerStore = [];
     constructor() {
+        this.messageStore = [];
+        this.listenerStore = [];
         this.stream = new Stream({
             type: 'feeds',
             username,
