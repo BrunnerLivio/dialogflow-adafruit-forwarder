@@ -26,14 +26,14 @@ class IncomingStream {
     }
 
     _getListeneterByRequestId(requestId) {
-        this.listenerStore.filter(listener => listener.requestId === requestId)
+        return this.listenerStore.filter(listener => listener.requestId === requestId)
     }
 
     _emitToListeners() {
         this.messageStore.forEach((message, index) => {
             logInfo(`Message found for ${message.requestId}`);
             this._getListeneterByRequestId(message.requestId)
-                .resolve(message);
+                .forEach(listener => listener.resolve(message));
             this.messageStore.splice(index, 1);
         });
     }
