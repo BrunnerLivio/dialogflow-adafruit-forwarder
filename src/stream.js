@@ -57,9 +57,15 @@ class Stream extends DuplexStream {
 
     this.client.on('error', (err) => this.emit('error', err));
 
-    this.client.on('offline', () => this.connected = false);
+    this.client.on('offline', () => {
+      this.connected = false;
+      this.emit('disconnected');
+    });
 
-    this.client.on('close', () => this.connected = false);
+    this.client.on('close', () => {
+      this.connected = false;
+      this.emit('disconnected');
+    });
 
     this.client.on('message', (topic, message) => {
       this.buffer.push(message);

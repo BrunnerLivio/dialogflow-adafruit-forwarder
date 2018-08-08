@@ -4,15 +4,16 @@ const username = process.env.ADAFRUIT_USERNAME;
 const key = process.env.ADAFRUIT_KEY;
 const feedIdIn = process.env.ADAFRUIT_FEED_ID_IN;
 const rxjs = require('rxjs');
-const { logInfo, logSuccess, logErrorAndExit } = require('./logger');
+const { logInfo, logSuccess, logErrorAndExit, logError } = require('./logger');
 
 const host = 'io.adafruit.com';
 const port = 8883;
 
 
-
 class IncomingStream {
+
     constructor() {
+        this.connectionRetries = 0;
         this.messageStore = [];
         this.listenerStore = [];
         this.stream = new Stream({
@@ -39,7 +40,6 @@ class IncomingStream {
     }
 
     connect() {
-        setInterval(() => this._emitToListeners(), 1000);
         return new Promise((resolve, reject) => {
             this.stream.connect();
             this.stream.on('connected', () => {
@@ -47,6 +47,15 @@ class IncomingStream {
                 logInfo(`Listening to stream`);
                 this.listen().subscribe(() => this._emitToListeners());;
                 resolve()
+            });
+            this.stream.on('error', message => logError(message));
+            this.stream.on('disconnected', async () => {
+                logInfo(`Trying to reconnect. Attempt ${this.connectionRetries + 1}`);
+                if (this.connectionRetries < 3) {
+                    this.connectionRetries++;
+                    await this.connect();
+                    this.connectionRetries = 0;
+                }
             });
         });
     }
