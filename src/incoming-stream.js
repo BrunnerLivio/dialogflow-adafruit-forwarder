@@ -16,14 +16,16 @@ class IncomingStream {
         this.connectionRetries = 0;
         this.messageStore = [];
         this.listenerStore = [];
-        this.stream = new Stream({
+        const settings = {
             type: 'feeds',
             username,
             key,
             host,
             port,
             id: feedIdIn
-        });
+        };
+        Logger.silly('Initializing Incoming Stream', settings);
+        this.stream = new Stream(settings);
     }
 
     _getListeneterByRequestId(requestId) {
@@ -34,8 +36,11 @@ class IncomingStream {
         this.messageStore.forEach((message, index) => {
             Logger.info(`Message found for ${message.requestId}`);
             this._getListeneterByRequestId(message.requestId)
-                .forEach(listener => listener.resolve(message));
-            this.messageStore.splice(index, 1);
+                .forEach(listener => {
+                    listener.resolve(message)
+                    Logger.silly(`Remove ${message.requestId} from messageStore`)
+                    this.messageStore.splice(index, 1);
+                });
         });
     }
 
@@ -65,7 +70,9 @@ class IncomingStream {
             this.stream.on('message', data => {
                 const parsedData = JSON.parse(data.toString('utf8'));
                 Logger.info('Received message ' + JSON.stringify(parsedData));
-                this.messageStore.push(JSON.parse(parsedData.data.value));
+                const parameters = JSON.parse(parsedData.data.value);
+                Logger.silly(`Add ${JSON.stringify(parameters.requestId)} to messageStore`);
+                this.messageStore.push(parameters);
                 observer.next(JSON.parse(parsedData.data.value));
             });
         });
@@ -73,6 +80,7 @@ class IncomingStream {
 
     async waitForNextMessage(requestId) {
         return new Promise((resolve, reject) => {
+            Logger.silly(`Add requestId ${requestId} to listenerStore`);
             this.listenerStore.push({ requestId, resolve, reject });
         });
 
