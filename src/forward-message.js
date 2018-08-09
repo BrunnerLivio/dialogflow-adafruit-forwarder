@@ -12,7 +12,12 @@ const stream = new IncomingStream();
 
 const generateMessage = ctx => {
     const requestId = uuidv4();
-    const data = ctx.body.queryResult;
+    const r = ctx.body.queryResult;
+    const data = {
+        queryText: r.queryText,
+        parameters: r.parameters,
+        languageCode: r.languageCode
+    };
     return { requestId, data };
 };
 
@@ -39,7 +44,8 @@ const forwardMessage = async ctx => {
     try {
         await sendData(value);
     } catch (ex) {
-        Logger.error(`Could not send data`, ex);
+        Logger.error(`Could not send data`);
+        Logger.error(ex);
     }
 
     Logger.debug('Waiting for message ' + data.requestId);
