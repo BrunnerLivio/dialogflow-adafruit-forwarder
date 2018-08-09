@@ -11,8 +11,8 @@ const port = process.env.PORT || 3000;
 
 printTitle();
 
-if (!key) return logErrorAndExit('You must set the env variable "ADAFRUIT_KEY"');
-if (!username) return logErrorAndExit('You must set the env variable "ADAFRUIT_USERNAME"');
+if (!key) return Logger.error('You must set the env variable "ADAFRUIT_KEY"');
+if (!username) return Logger.error('You must set the env variable "ADAFRUIT_USERNAME"');
 
 new Server()
     .listen(port)
