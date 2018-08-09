@@ -30,7 +30,7 @@ const sendData = async value => {
 
 const forwardMessage = async ctx => {
     let data;
-    Logger.debug(`Recevied body ${ctx.body}`);
+    Logger.debug(`Recevied body ${JSON.stringify(ctx.body)}`);
     try {
         data = generateMessage(ctx);
     }
@@ -50,7 +50,7 @@ const forwardMessage = async ctx => {
 
     Logger.debug('Waiting for message ' + data.requestId);
     const incomingMessage = await stream.waitForNextMessage(data.requestId);
-    Logger.info(`Received message ${incomingMessage}`);
+    Logger.info(`Received message ${JSON.stringify(incomingMessage)}`);
 
     ctx.response.res.statusCode = 200;
     ctx.body = { fulfillmentText: incomingMessage.data };
