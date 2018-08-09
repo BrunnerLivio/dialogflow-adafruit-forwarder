@@ -1,7 +1,7 @@
 const Chalk = require('chalk');
 
 
-const { logErrorAndExit, logInfo } = require('./logger');
+const { Logger } = require('./logger');
 const Server = require('./server');
 
 const printTitle = require('./printTitle');
@@ -17,6 +17,6 @@ if (!username) return logErrorAndExit('You must set the env variable "ADAFRUIT_U
 new Server()
     .listen(port)
     .then(() =>
-        logInfo('Try ' + Chalk.blue(`curl -X POST http://localhost:${port}/ -H 'content-type: application/json' -d '{"queryResult": {"queryText": "123123", "parameters": ["1"]}}'`)));
+        Logger.info('Try ' + Chalk.blue(`curl -X POST http://localhost:${port}/ -H 'content-type: application/json' -d '{"queryResult": {"queryText": "123123", "parameters": ["1"]}}'`)));
 
 

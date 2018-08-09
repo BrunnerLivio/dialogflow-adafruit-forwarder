@@ -1,7 +1,7 @@
 const Axios = require('axios');
 const uuidv4 = require('uuid/v4');
 const IncomingStream = require('./incoming-stream');
-const { logInfo, logSuccess } = require('./logger');
+const { Logger } = require('./logger');
 
 const username = process.env.ADAFRUIT_USERNAME;
 const key = process.env.ADAFRUIT_KEY;
@@ -24,7 +24,7 @@ const generateMessage = ctx => {
 
 const sendData = async value => {
     const data = await Axios.post(url, { value }, { headers: { 'X-AIO-Key': key } });
-    logInfo('Sent data!');
+    Logger.info('Sent data!');
     return data;
 };
 
@@ -34,12 +34,12 @@ const forwardMessage = async ctx => {
         data = generateMessage(ctx);
     }
     catch (ex) {
-        logError('Invalid data received', ex);
+        Logger.error('Invalid data received', ex);
         return ctx.response.res.statusCode = 500;
     }
     const value = JSON.stringify(data);
 
-    logInfo(`Sending data to ${url}. Value: ${value}`);
+    Logger.debug(`Sending data to ${url}. Value: ${value}`);
 
     try {
         await sendData(value);
@@ -47,9 +47,9 @@ const forwardMessage = async ctx => {
         logError(`Could not send data`, ex);
     }
 
-    logInfo('Waiting for message ' + data.requestId);
+    Logger.debug('Waiting for message ' + data.requestId);
     const incomingMessage = await stream.waitForNextMessage(data.requestId);
-    logInfo(`Received message ${incomingMessage}`);
+    Logger.info(`Received message ${incomingMessage}`);
 
     ctx.response.res.statusCode = 200;
     ctx.body = { fulfillmentText: incomingMessage.data };

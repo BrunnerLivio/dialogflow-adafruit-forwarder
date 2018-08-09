@@ -7,7 +7,7 @@ const bodyParser = require('koa-bodyparser');
 const Chalk = require('chalk');
 
 const forwardMessage = require('./forward-message');
-const { logSuccess, logInfo } = require('./logger');
+const { Logger } = require('./logger');
 
 
 
@@ -33,7 +33,7 @@ class Server {
 
         this.koa.use(this.app.routes());
         this.koa.listen(port);
-        logSuccess(`Listening on port ${Chalk.green(port)}`);
+        Logger.info(`Listening on port ${Chalk.green(port)}`);
 
     }
 }

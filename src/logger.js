@@ -1,11 +1,38 @@
-const emoji = require('node-emoji');
+const Winston = require('winston');
+const Chalk = require('chalk');
 
-const logInfo = (...args) => console.log(`${emoji.get('information_source')} ` + args);
-const logSuccess = (...args) => console.log(`${emoji.get('rocket')} ` + args);
-const logError = (...args) => console.error(`${emoji.get('red_circle')} ` + args);
-const logErrorAndExit = (...args) => {
-    logError(...args);
-    process.exit(1);
-};
+const { combine, timestamp, label, printf } = Winston.format;
 
-module.exports = { logInfo, logSuccess, logError, logErrorAndExit };
+const style = (message, color) =>
+    `${Chalk.cyan(message.timestamp)} ${Chalk[color](message.level)}: ${message.message}`;
+
+const myFormat = printf((message) => {
+    switch (message.level) {
+        case 'info':
+            return style(message, 'blue');
+        case 'error':
+            return style(message, 'red');
+        case 'warn':
+            return style(message, 'yellow');
+        case 'silly':
+            return style(message, 'gray');
+        default:
+            return style(message, 'blueBright');
+    }
+});
+
+const format = combine(
+    label(),
+    timestamp(),
+    myFormat
+);
+
+const Logger = Winston.createLogger({
+    level: process.env.LOG_LEVEL || 'info',
+    format: Winston.format.json(),
+    transports: [
+        new Winston.transports.Console({ format })
+    ]
+});
+
+module.exports = { Logger };
