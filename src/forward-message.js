@@ -12,14 +12,8 @@ const stream = new IncomingStream();
 
 const generateMessage = ctx => {
     const requestId = uuidv4();
-    const result = ctx.body.queryResult;
-    return {
-        requestId,
-        data: {
-            queryText: result.queryText,
-            parameters: result.parameters
-        }
-    };
+    const data = ctx.body.queryResult;
+    return { requestId, data };
 };
 
 const sendData = async value => {
