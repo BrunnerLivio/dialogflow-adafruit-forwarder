@@ -13,7 +13,6 @@ const port = 8883;
 class IncomingStream {
 
     constructor() {
-        this.connectionRetries = 0;
         this.messageStore = [];
         this.listenerStore = [];
         const settings = {
@@ -48,23 +47,12 @@ class IncomingStream {
         return new Promise((resolve, reject) => {
             this.stream.connect();
             this.stream.on('connected', () => {
-                this.connectionRetries = 0;
                 Logger.info(`Connected to stream`);
                 Logger.info(`Listening to message`);
                 this.listen().subscribe(() => this._emitToListeners());;
                 resolve();
             });
             this.stream.on('error', message => Logger.error(message));
-            this.stream.on('disconnected', async () => {
-                Logger.info(`Trying to reconnect in 3 seconds. Attempt ${this.connectionRetries + 1}`);
-                setTimeout(async () => {
-                    await this.connect();
-                    if (this.connectionRetries < 3) {
-                        this.connectionRetries++;
-                        await this.connect();
-                    }
-                }, 3000);
-            });
         });
     }
 
