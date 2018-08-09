@@ -48,19 +48,22 @@ class IncomingStream {
         return new Promise((resolve, reject) => {
             this.stream.connect();
             this.stream.on('connected', () => {
+                this.connectionRetries = 0;
                 Logger.info(`Connected to stream`);
                 Logger.info(`Listening to message`);
                 this.listen().subscribe(() => this._emitToListeners());;
-                resolve()
+                resolve();
             });
             this.stream.on('error', message => logError(message));
             this.stream.on('disconnected', async () => {
-                Logger.info(`Trying to reconnect. Attempt ${this.connectionRetries + 1}`);
-                if (this.connectionRetries < 3) {
-                    this.connectionRetries++;
+                Logger.info(`Trying to reconnect in 3 seconds. Attempt ${this.connectionRetries + 1}`);
+                setTimeout(async () => {
                     await this.connect();
-                    this.connectionRetries = 0;
-                }
+                    if (this.connectionRetries < 3) {
+                        this.connectionRetries++;
+                        await this.connect();
+                    }
+                }, 3000);
             });
         });
     }

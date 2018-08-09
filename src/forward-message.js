@@ -30,6 +30,7 @@ const sendData = async value => {
 
 const forwardMessage = async ctx => {
     let data;
+    Logger.debug(`Recevied body ${ctx.body}`);
     try {
         data = generateMessage(ctx);
     }
