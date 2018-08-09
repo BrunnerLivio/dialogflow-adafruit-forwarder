@@ -39,7 +39,7 @@ const forwardMessage = async ctx => {
     try {
         await sendData(value);
     } catch (ex) {
-        logError(`Could not send data`, ex);
+        Logger.error(`Could not send data`, ex);
     }
 
     Logger.debug('Waiting for message ' + data.requestId);

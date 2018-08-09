@@ -54,7 +54,7 @@ class IncomingStream {
                 this.listen().subscribe(() => this._emitToListeners());;
                 resolve();
             });
-            this.stream.on('error', message => logError(message));
+            this.stream.on('error', message => Logger.error(message));
             this.stream.on('disconnected', async () => {
                 Logger.info(`Trying to reconnect in 3 seconds. Attempt ${this.connectionRetries + 1}`);
                 setTimeout(async () => {
