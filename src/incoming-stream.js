@@ -19,6 +19,10 @@ class IncomingStream {
         this.listenerStore = [];
     }
 
+    _getListeneterByRequestId(requestId) {
+        return this.listenerStore.filter(listener => listener.requestId === requestId)
+    }
+
     fetchLastData() {
         return axios.get(`https://io.adafruit.com/api/v2/${username}/feeds/${feedIdIn}/data/last`, { headers: { 'X-AIO-Key': key } });
     }

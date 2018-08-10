@@ -28,8 +28,7 @@ class Server {
     }
     async listen(port) {
         await this._bootstrap();
-        const forwarder = await forwardMessage.init();
-        this.app.post('/', forwarder);
+        this.app.post('/', forwardMessage);
 
         this.koa.use(this.app.routes());
         this.koa.listen(port);

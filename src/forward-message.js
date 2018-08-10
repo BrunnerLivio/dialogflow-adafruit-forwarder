@@ -56,9 +56,4 @@ const forwardMessage = async ctx => {
     ctx.body = { fulfillmentText: incomingMessage.data };
 };
 
-module.exports = {
-    async init() {
-        await stream.connect();
-        return forwardMessage;
-    }
-};
+module.exports = forwardMessage;
