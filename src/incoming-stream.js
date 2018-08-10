@@ -15,6 +15,10 @@ class IncomingStream {
     constructor() {
         this.messageStore = [];
         this.listenerStore = [];
+        this._initializeStream();
+    }
+
+    _initializeStream() {
         const settings = {
             type: 'feeds',
             username,
@@ -33,12 +37,11 @@ class IncomingStream {
 
     _emitToListeners() {
         this.messageStore.forEach((message, index) => {
-            Logger.info(`Message found for ${message.requestId}`);
             this._getListeneterByRequestId(message.requestId)
                 .forEach(listener => {
-                    listener.resolve(message)
-                    Logger.silly(`Remove ${message.requestId} from messageStore`)
+                    Logger.silly(`Found ${message.requestId} in messageStore and remove it now`);
                     this.messageStore.splice(index, 1);
+                    listener.resolve(message)
                 });
         });
     }
@@ -70,7 +73,9 @@ class IncomingStream {
     }
 
     async waitForNextMessage(requestId) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
+            this._initializeStream();
+            await this.connect();
             Logger.silly(`Add requestId ${requestId} to listenerStore`);
             this.listenerStore.push({ requestId, resolve, reject });
         });
