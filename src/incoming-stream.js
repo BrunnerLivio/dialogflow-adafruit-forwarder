@@ -1,10 +1,13 @@
 
+const rxjs = require('rxjs');
+const axios = require('axios');
 const Stream = require('./stream');
+const { Logger } = require('./logger');
+
 const username = process.env.ADAFRUIT_USERNAME;
 const key = process.env.ADAFRUIT_KEY;
 const feedIdIn = process.env.ADAFRUIT_FEED_ID_IN;
-const rxjs = require('rxjs');
-const { Logger } = require('./logger');
+const key = process.env.ADAFRUIT_KEY;
 
 const host = 'io.adafruit.com';
 const port = 8883;
@@ -59,6 +62,10 @@ class IncomingStream {
         });
     }
 
+    fetchLastData() {
+        return axios.get(`https://io.adafruit.com/api/v2/${username}/feeds/${feedIdIn}/data/last`, { headers: { 'X-AIO-Key': key } });
+    }
+
     listen() {
         return rxjs.Observable.create(observer => {
             this.stream.on('message', data => {
@@ -78,6 +85,7 @@ class IncomingStream {
             await this.connect();
             Logger.silly(`Add requestId ${requestId} to listenerStore`);
             this.listenerStore.push({ requestId, resolve, reject });
+            setInterval(async () => console.log(await this.fetchLastData()), 1000);
         });
 
     }
