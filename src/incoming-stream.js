@@ -17,48 +17,6 @@ class IncomingStream {
     constructor() {
         this.messageStore = [];
         this.listenerStore = [];
-        this._initializeStream();
-    }
-
-    _initializeStream() {
-        const settings = {
-            type: 'feeds',
-            username,
-            key,
-            host,
-            port,
-            id: feedIdIn
-        };
-        Logger.silly('Initializing Incoming Stream', settings);
-        this.stream = new Stream(settings);
-    }
-
-    _getListeneterByRequestId(requestId) {
-        return this.listenerStore.filter(listener => listener.requestId === requestId)
-    }
-
-    _emitToListeners() {
-        this.messageStore.forEach((message, index) => {
-            this._getListeneterByRequestId(message.requestId)
-                .forEach(listener => {
-                    Logger.silly(`Found ${message.requestId} in messageStore and remove it now`);
-                    this.messageStore.splice(index, 1);
-                    listener.resolve(message)
-                });
-        });
-    }
-
-    connect() {
-        return new Promise((resolve, reject) => {
-            this.stream.connect();
-            this.stream.on('connected', () => {
-                Logger.info(`Connected to stream`);
-                Logger.info(`Listening to message`);
-                this.listen().subscribe(() => this._emitToListeners());;
-                resolve();
-            });
-            this.stream.on('error', message => Logger.error(message));
-        });
     }
 
     fetchLastData() {
@@ -90,6 +48,8 @@ class IncomingStream {
 
     async waitForNextMessage(requestId) {
         return new Promise(async (resolve, reject) => {
+            // Check almost immediatly
+            setTimeout(async () => await this._checkData(), 100);
             let intervalId = setInterval(async () => await this._checkData(), 400);
             Logger.silly(`Add requestId ${requestId} to listenerStore`);
             this.listenerStore.push({ requestId, resolve, reject, intervalId });
