@@ -27,7 +27,7 @@ const format = combine(
     myFormat
 );
 
-const Logger = Winston.createLogger({
+export const Logger = Winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
     format: Winston.format.json(),
     transports: [
@@ -35,4 +35,3 @@ const Logger = Winston.createLogger({
     ]
 });
 
-module.exports = { Logger };

@@ -5,6 +5,8 @@ WORKDIR /var/lib/dialogflow-adafruit-forwarder
 COPY package.json ./
 RUN npm install
 COPY . .
+RUN npm run build
+
 
 ENTRYPOINT [ "npm", "run" ]
 EXPOSE 3000
