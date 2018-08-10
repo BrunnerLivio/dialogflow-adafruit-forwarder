@@ -7,7 +7,6 @@ const { Logger } = require('./logger');
 const username = process.env.ADAFRUIT_USERNAME;
 const key = process.env.ADAFRUIT_KEY;
 const feedIdIn = process.env.ADAFRUIT_FEED_ID_IN;
-const key = process.env.ADAFRUIT_KEY;
 
 const host = 'io.adafruit.com';
 const port = 8883;
@@ -79,13 +78,21 @@ class IncomingStream {
         });
     }
 
+    async _checkData() {
+        let response = await this.fetchLastData();
+        const message = JSON.parse(response.data.value);
+        this._getListeneterByRequestId(message.requestId)
+            .forEach(listener => {
+                clearInterval(listener.intervalId);
+                listener.resolve(message);
+            });
+    }
+
     async waitForNextMessage(requestId) {
         return new Promise(async (resolve, reject) => {
-            this._initializeStream();
-            await this.connect();
+            let intervalId = setInterval(async () => await this._checkData(), 400);
             Logger.silly(`Add requestId ${requestId} to listenerStore`);
-            this.listenerStore.push({ requestId, resolve, reject });
-            setInterval(async () => console.log(await this.fetchLastData()), 1000);
+            this.listenerStore.push({ requestId, resolve, reject, intervalId });
         });
 
     }
