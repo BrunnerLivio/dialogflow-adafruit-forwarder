@@ -18,8 +18,7 @@ services:
       - default
 
   adafruit_forwarder:
-    build:
-      context: .
+    image: brunnel6/dialogflow-adafruit-forwarder
     container_name: adafruit_forwarder
     env_file:
       - ./cred.env
@@ -34,7 +33,6 @@ services:
     image: v2tec/watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ~/.docker/config.json:/config.json
     command: --interval 30
 
 networks:
