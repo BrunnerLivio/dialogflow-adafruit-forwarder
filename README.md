@@ -20,6 +20,7 @@ npm start
 
 mv default.env cred.env
 vi cred.env
+
 docker build -t $USER/dialogflow-adafruit-forwarder .
 docker run \
   --env-file ./cred.env \
@@ -30,9 +31,18 @@ docker run \
 
 ## Environment variables
 
-|       ADAFRUIT_KEY      |      ADAFRUIT_USERNAME    |         NO_EMOJI       |               PORT              |      ADAFRUIT_FEED_ID           |
-|-------------------------|---------------------------|------------------------|---------------------------------|---------------------------------|
-| The API Key of Adafruit | Your username of Adafruit | Should not print emoji | The port it should listen on    | The id of the adafruit feed     |
+The environment variables
+
+| Variable Name        | Description                                                                | Type    | Example                                      | Default | Required |
+|:---------------------|:---------------------------------------------------------------------------|:--------|:---------------------------------------------|:--------|:---------|
+| ADAFRUIT_KEY         | The API Key of Adafruit                                                    | string  | `ADAFRUIT_KEY="<SECRET>"`                    | -       | true     |
+| ADAFRUIT_USERNAME    | If should only simulate this app (not actually alter anything permanently) | string  | `ADAFRUIT_USERNAME="<USERNAME>"`             | -       | true     |
+| ADAFRUIT_FEED_ID_IN  | The Adafruit Feed which this application listens to                        | string  | `ADAFRUIT_FEED_ID_IN="google-openstack-out"` | -       | true     |
+| ADAFRUIT_FEED_ID_OUT | The Adafruit Feed which this application sends messages to                 | string  | `ADAFRUIT_FEED_ID_OUT="google-openstack-in"` | -       | true     |
+| NO_EMOJI             | Do not print any emojis                                                    | boolean | `NO_EMOJI=true`                              | false   | false    |
+| LOG_LEVEL            | The level of the log (error, warn, info, debug, silly)                     | string  | `LOG_LEVEL=silly`                            | info    | false    |
+| PORT                 | The port of the webserver                                                  | number  | `PORT=3000`                                  | 3000    | false    |
+| VIRTUAL_HOST         | Only if running with `docker-compose`.                                     | string  | `VIRTUAL_HOST=localhost`                     | -       | false    |
 
 ## Deploy on a server
 
