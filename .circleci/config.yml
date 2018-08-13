@@ -1,0 +1,28 @@
+version: 2
+jobs:
+ deploy:
+   machine: true
+   steps:
+     - checkout
+     # start proprietary DB using private Docker image
+     # with credentials stored in the UI
+     - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+     # build the application image
+     - run: docker build -t brunnel6/dialogflow-adafruit-forwarder:$CIRCLE_TAG .
+
+     - run: docker tag brunnel6/dialogflow-adafruit-forwarder:$CIRCLE_TAG brunnel6/dialogflow-adafruit-forwarder:latest
+     # deploy the image
+     - run: docker push brunnel6/dialogflow-adafruit-forwarder:$CIRCLE_TAG
+     - run: docker push brunnel6/dialogflow-adafruit-forwarder:latest
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - deploy:
+          filters:
+            branches:
+              only: master
+            tags:
+              only: /^v.*/
