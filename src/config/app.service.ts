@@ -3,6 +3,8 @@ export interface AdafruitConfig {
     key: string;
     feedIdIn: string;
     feedIdOut: string;
+    host?: string;
+    port?: number;
 }
 
 export interface DialogflowAdafruitForwarderConfig {

@@ -6,3 +6,8 @@ export interface AdafruitMessage {
         languageCode: string;
     }
 }
+
+export interface IncomingAdafruitMessage {
+    requestId: string;
+    data: string;
+}

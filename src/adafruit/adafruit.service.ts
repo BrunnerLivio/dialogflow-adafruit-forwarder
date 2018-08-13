@@ -14,4 +14,12 @@ export class AdafruitService {
     public async send(msg: AdafruitMessage) {
         return await this.sendService.send(msg);
     }
+
+    public async listenForNextRequestId(requestId: string) {
+        return await this.receiveService.listenForNextRequestId(requestId);
+    }
+
+    public async listen() {
+        return await this.receiveService.listen();
+    }
 }
