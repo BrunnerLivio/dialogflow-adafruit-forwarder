@@ -34,10 +34,12 @@ export class AdafruitReceiveService {
 
     private registerListener(data: Listener) {
         this.listenerStore.push(data);
+        Logger.silly(`Adding Listener with ${Chalk.cyan(data.requestId)}. ${this.listenerStore.length} Listeners left in Memory store.`);
     }
 
     private registerMessage(message: IncomingAdafruitMessage) {
         this.messageStore.push(message);
+        Logger.silly(`Adding Message with ${Chalk.cyan(message.requestId)}. ${this.messageStore.length} Messages left in Memory Store.`);
     }
 
     private removeListener(requestId: string, index: number) {
@@ -81,6 +83,8 @@ export class AdafruitReceiveService {
         if (!this.onMessageSubscription) {
             Logger.silly('Subscribing to "message" event');
             this.stream.on('message', msg => this.onMessage(msg));
+            this.stream.on('disconnected', msg => Logger.error('Discconnected ' + msg));
+            this.stream.on('error', msg => Logger.error('Error ' + msg));
         }
     }
 
