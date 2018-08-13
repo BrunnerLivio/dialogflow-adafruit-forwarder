@@ -19,10 +19,10 @@ export class AdafruitReceiveService {
     private connected = false;
     private messageStore: IncomingAdafruitMessage[] = new Array<IncomingAdafruitMessage>();
     private listenerStore: Listener[] = new Array<Listener>();
-    private onMessageSubscription: Observable<IncomingAdafruitMessage>;
 
     constructor(private config: AdafruitConfig) {
-        this.stream = new Stream(this.config);
+        const { key, username, feedIdIn } = this.config;
+        this.stream = new Stream({ username, key, type: 'feeds', id: feedIdIn });
     }
 
     private getMessageByRequestId(requestId): { message: IncomingAdafruitMessage, index: number } {
@@ -80,12 +80,10 @@ export class AdafruitReceiveService {
     }
 
     private subscribeToEvents(): void {
-        if (!this.onMessageSubscription) {
-            Logger.silly('Subscribing to "message" event');
-            this.stream.on('message', msg => this.onMessage(msg));
-            this.stream.on('disconnected', msg => Logger.error('Discconnected ' + msg));
-            this.stream.on('error', msg => Logger.error('Error ' + msg));
-        }
+        Logger.silly('Subscribing to "message" event');
+        this.stream.on('message', msg => this.onMessage(msg));
+        this.stream.on('disconnected', msg => Logger.error('Discconnected ' + msg));
+        this.stream.on('error', msg => Logger.error('Error ' + msg));
     }
 
     private async connect() {
@@ -93,11 +91,11 @@ export class AdafruitReceiveService {
             if (this.connected) {
                 return resolve();
             }
-            this.stream.connect(this.config.feedIdIn);
+            this.stream.connect();
+            this.subscribeToEvents();
             this.stream.on('connected', (host, port) => {
                 this.connected = true;
                 Logger.info(`Established connection to server ${Chalk.blue(`${host}:${port}`)}`);
-                this.subscribeToEvents();
                 return resolve();
             });
         });
