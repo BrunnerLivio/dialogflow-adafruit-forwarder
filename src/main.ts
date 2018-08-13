@@ -24,7 +24,7 @@ export class DialogflowAdafruitForwarder {
             this.printVersion();
         }
         catch (err) {
-            Logger.error('Could not fetch current version: ' + err.message);
+            Logger.error('Could not fetch current version:  ' + err.message);
         }
     }
 

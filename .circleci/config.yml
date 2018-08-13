@@ -18,9 +18,12 @@ jobs:
 
 workflows:
   version: 2
-  deploy:
+  deploy_all:
     jobs:
       - deploy:
           filters:
+            branches:
+              ignore: /.*/
             tags:
-              only: /.*/
+              # Semantiv Versioning
+              only: /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/
