@@ -4,6 +4,7 @@ import Chalk from 'chalk';
 import { Observable, Observer } from 'rxjs';
 import { IncomingAdafruitMessage } from './adafruit-message.interface';
 import { TimeoutError } from '../errors/timeout.error';
+import { AdafruitMQTTService } from './adafruit-mqtt.service';
 
 const TIMEOUT = 20 * 1000;
 
@@ -15,14 +16,12 @@ interface Listener {
 }
 
 export class AdafruitReceiveService {
-    private stream: Stream;
-    private connected = false;
+    private adafruit: AdafruitMQTTService;
     private messageStore: IncomingAdafruitMessage[] = new Array<IncomingAdafruitMessage>();
     private listenerStore: Listener[] = new Array<Listener>();
 
     constructor(private config: AdafruitConfig) {
-        const { key, username, feedIdIn } = this.config;
-        this.stream = new Stream({ username, key, type: 'feeds', id: feedIdIn });
+        this.adafruit = new AdafruitMQTTService(this.config);
     }
 
     private getMessageByRequestId(requestId): { message: IncomingAdafruitMessage, index: number } {
@@ -70,39 +69,21 @@ export class AdafruitReceiveService {
         });
     }
 
-    private onMessage(data: Buffer) {
-        const rawMessage = data.toString('utf8')
-        Logger.silly(`Received raw message: ${rawMessage}`);
-        const parsedData = JSON.parse(rawMessage);
-        const message = JSON.parse(parsedData.data.value) as IncomingAdafruitMessage;
-        this.registerMessage(message);
+    private onMessage(message: IncomingAdafruitMessage) {
+        Logger.silly('Calling AdafruitReceiveService.onMessage');
+        const storedMessage = this.getMessageByRequestId(message.requestId);
+        if (!storedMessage.message) {
+            this.registerMessage(message);
+        }
         this.checkResolveableListeners();
     }
 
-    private subscribeToEvents(): void {
-        Logger.silly('Subscribing to "message" event');
-        this.stream.on('message', msg => this.onMessage(msg));
-        this.stream.on('disconnected', (host, port) => Logger.error('Discconnected'));
-        this.stream.on('error', msg => Logger.error('Error ' + msg));
-    }
-
-    private async connect() {
-        return new Promise(resolve => {
-            if (this.connected) {
-                return resolve();
-            }
-            this.stream.connect();
-            this.subscribeToEvents();
-            this.stream.on('connected', (host, port) => {
-                this.connected = true;
-                Logger.info(`Established connection to server ${Chalk.blue(`${host}:${port}`)}`);
-                return resolve();
-            });
-        });
-    }
-
     public async listen() {
-        await this.connect();
+        if (!this.adafruit.isConnected()) {
+            await this.adafruit.connect();
+            await this.adafruit.onMessage().subscribe(message => this.onMessage(message));
+        }
+
     }
 
     public async listenForNextRequestId(requestId: string): Promise<any | IncomingAdafruitMessage> {

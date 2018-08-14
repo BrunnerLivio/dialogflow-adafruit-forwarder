@@ -72,9 +72,9 @@ export class Stream extends DuplexStream {
         });
 
         this.client.on('message', (topic, message) => {
-            console.log('Received message');
-            this.buffer.push(message);
+            console.log('Received message', message.toString('utf8'));
             this.emit('message', message);
+            this.buffer.push(message);
         });
 
     }
