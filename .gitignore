@@ -1,5 +1,5 @@
 node_modules
-!default.env
 *.env
+!default.env
 certs
 lib

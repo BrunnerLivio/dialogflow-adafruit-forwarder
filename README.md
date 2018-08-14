@@ -1,31 +1,85 @@
-# Dialogflow Adafruit Forwader
+# Dialogflow Adafruit Forwarder
 
-Webserver which forwards webhook requests from dialogflow to adafruit
+**Application which forwards messages from Dialogflow to Adafruit, so
+you do not have to use Google Cloud Functions**
+
+[![Circle CI Status](https://circleci.com/gh/BRUNNEL6/dialogflow-adafruit-forwarder.png?circle-token=77b4c5966fb00e3fb796572cff4be464beeab8c4&style=shield)](https://circleci.com/gh/BRUNNEL6/dialogflow-adafruit-forwarde)
+
+![Architecture](assets/architecture.png)
+
+## Purpose
+
+`dialogflow-adafruit-forwarder` lets you control your Openstack setup with your Google Home. This application is split into multiple parts; internet-part (this appliaction) and [intranet-part](https://github.com/brunnel6/google-home-openstack).
+
+Thanks to this architecture it is possible to control your Openstack setup, without connecting it to the internet.
+
+The main purpose of this project is to forward the incoming webhook POST-bodies from Dialogflow to Adafruit, listen until an answer gets published by [google-home-openstack](https://github.com/brunnel6/google-home-openstack) and then send a HTTP response back to Dialogflow.
 
 ## Getting Started
 
-Make sure you have NodeJS 9.x.x installed
+### From Source
+
+To build it from source, make sure you have NodeJS 9.x.x and Git installed.
 
 ```bash
 
+# Clone the repository
+git clone https://github.com/brunnel6/dialogflow-adafruit-forwarder.git
+
+# Install the dependencies
 npm install
-npm start
+# Build the application
+npm run build
+
+# Run the application with your settings
+ADAFRUIT_KEY=<KEY> ADAFRUIT_USERNAME=<USERNAME> ADAFRUIT_FEED_ID_IN=<ID> ADAFRUIT_FEED_ID_OUT=<ID> npm start
 # curl -X POST http://localhost:3000/ -H 'content-type: application/json' -d '{"query": "123123"}'
 
 ```
 
-## Docker
+### Docker
+
+You can use Docker 18.x.x-ce to run the application, without installing NodeJS on your
+machine.
 
 ```bash
 
-mv default.env cred.env
-vi cred.env
+wget https://raw.githubusercontent.com/BRUNNEL6/dialogflow-adafruit-forwarder/master/default.env
 
-docker build -t $USER/dialogflow-adafruit-forwarder .
+# Edit configuration file
+vi default.env
+
 docker run \
-  --env-file ./cred.env \
+  --env-file ./default.env \
   -p 3000:3000 \
-  -ti $USER/dialogflow-adafruit-forwarder
+  -ti brunnel6/dialogflow-adafruit-forwarder:latest
+
+```
+
+### docker-compose (Automatic container updates / SSL)
+
+This `docker-compose` configuration starts [v2tec/watchtower](https://github.com/v2tec/watchtower) in addition to `dialogflow-adafruit-forwarder`. Watchtower watches over the docker image and updates it, if a new docker image version is public.
+
+```bash
+
+wget https://raw.githubusercontent.com/BRUNNEL6/dialogflow-adafruit-forwarder/master/default.env
+wget https://raw.githubusercontent.com/BRUNNEL6/dialogflow-adafruit-forwarder/master/docker-compose.yml
+# Edit configuration file
+vi default.env
+mv default.env cred.env
+
+# Start applications
+docker-compose up
+
+```
+
+Move your SSL certifiaces into the certs folder of this repository. The cert / key must have the same name as the defined VIRTUAL_HOST environment variable (in the `cred.env` file)
+
+```bash
+
+mkdir certs
+mv /path/to/mydomain.com.cert certs/
+mv /path/to/mydomain.com.key certs/
 
 ```
 
@@ -42,9 +96,13 @@ The environment variables
 | NO_EMOJI             | Do not print any emojis                                                    | boolean | `NO_EMOJI=true`                              | false   | false    |
 | LOG_LEVEL            | The level of the log (error, warn, info, debug, silly)                     | string  | `LOG_LEVEL=silly`                            | info    | false    |
 | PORT                 | The port of the webserver                                                  | number  | `PORT=3000`                                  | 3000    | false    |
-| VIRTUAL_HOST         | Only if running with `docker-compose`.                                     | string  | `VIRTUAL_HOST=localhost`                     | -       | false    |
+| VIRTUAL_HOST         | Only if running with `docker-compose`.                                     | string  | `VIRTUAL_HOST=mydomain.com`                     | -       | false    |
 
-## Deploy on a server
+## Related
 
-See [DEPLOY-ON-SERVER.md](DEPLOY-ON-SERVER.md) which describes how to run this application
-using docker-compose with a predefined nginx configuration and SSL support.
+- [google-home-openstack](https://github.com/BRUNNEL6/google-home-openstack): Application which creates Openstack Virtual Machines when command Google Home to..
+
+## People
+
+- [Livio Brunner](https://github.com/BrunnerLivio) - Author
+- [Eric Keller](https://github.com/erickellerek1) - Idea
