@@ -82,7 +82,7 @@ export class AdafruitReceiveService {
     private subscribeToEvents(): void {
         Logger.silly('Subscribing to "message" event');
         this.stream.on('message', msg => this.onMessage(msg));
-        this.stream.on('disconnected', msg => Logger.error('Discconnected ' + msg));
+        this.stream.on('disconnected', (host, port) => Logger.error('Discconnected'));
         this.stream.on('error', msg => Logger.error('Error ' + msg));
     }
 

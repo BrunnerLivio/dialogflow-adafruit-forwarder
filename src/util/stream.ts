@@ -56,22 +56,23 @@ export class Stream extends DuplexStream {
         this.client.on('reconnect', () => {
             this.client.subscribe(`${this.username}/${this.type}/${this.id}/json`);
             this.connected = true;
-            this.emit('connected');
+            this.emit('connected', this.host, this.port);
         });
 
         this.client.on('error', (err) => this.emit('error', err));
 
         this.client.on('offline', (err) => {
             this.connected = false;
-            this.emit('disconnected', err);
+            this.emit('disconnected', this.host, this.port);
         });
 
         this.client.on('close', (err) => {
             this.connected = false
-            this.emit('disconnected', err);
+            this.emit('disconnected', this.host, this.port);
         });
 
         this.client.on('message', (topic, message) => {
+            console.log('Received message');
             this.buffer.push(message);
             this.emit('message', message);
         });
