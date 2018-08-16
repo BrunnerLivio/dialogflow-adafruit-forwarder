@@ -56,11 +56,11 @@ export class WebServer {
 
     }
 
-    public async listen(port) {
+    public async listen(port, host) {
         this.app.post('/', async ctx => await this.forwardMessage(ctx));
 
         this.koa.use(this.app.routes());
-        this.koa.listen(port);
+        this.koa.listen(port, host);
         Logger.info(`Listening on port ${Chalk.green(port)}`);
 
     }

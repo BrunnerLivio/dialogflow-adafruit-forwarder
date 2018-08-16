@@ -10,6 +10,7 @@ export interface AdafruitConfig {
 export interface DialogflowAdafruitForwarderConfig {
     adafruit: AdafruitConfig;
     port: number;
+    host?: string;
     noEmoji: boolean;
     logLevel: string;
 }
