@@ -52,7 +52,7 @@ export class WebServer {
         await this.adafruitService.send(msg);
         Logger.debug(`Listen for ${msg.requestId}`);
         const message = await this.adafruitService.listenForNextRequestId(msg.requestId);
-        const body = { fulfillmentText: message.data };
+        const body = message.data;
         Logger.silly(`Sending HTTP body ${JSON.stringify(body)}`);
         ctx.body = body;
 
