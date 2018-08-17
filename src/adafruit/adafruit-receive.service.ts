@@ -60,7 +60,7 @@ export class AdafruitReceiveService {
                 listener.resolve(message);
                 this.removeMessage(message.requestId, index);
                 this.removeListener(listener.requestId, listenerIndex);
-            } else if (liftetime > TIMEOUT) {
+            } else if (message && liftetime > TIMEOUT) {
                 Logger.error(`Reject ${Chalk.cyan(message.requestId)} after TIMEOUT ${Chalk.red(liftetime.toString())}ms`)
                 listener.reject(new TimeoutError());
                 this.removeMessage(message.requestId, index);
