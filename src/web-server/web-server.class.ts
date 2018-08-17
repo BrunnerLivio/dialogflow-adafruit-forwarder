@@ -9,6 +9,8 @@ import { AdafruitService } from '../adafruit';
 import { AdafruitMessageFactory } from '../adafruit/adafruit-message.factory';
 import { InvalidDataReceived } from '../errors/invalid-data-received.error';
 import { AdafruitMessage } from '../adafruit/adafruit-message.interface';
+import { join } from 'path';
+import { readFile } from 'fs-extra';
 
 export class WebServer {
     private koa: Koa;
@@ -58,6 +60,9 @@ export class WebServer {
 
     public async listen(port, host) {
         this.app.post('/', async ctx => await this.forwardMessage(ctx));
+        this.app.get('/', async function* () {
+            this.body = yield await readFile(join(__dirname, '../public/index.html'), 'utf8');
+        });
 
         this.koa.use(this.app.routes());
         this.koa.listen(port, host);
