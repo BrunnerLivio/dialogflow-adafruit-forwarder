@@ -34,6 +34,6 @@ export class DialogflowAdafruitForwarder {
     public async start() {
         this.startingMessage();
         await this.adafruitService.listen();
-        await this.webServer.listen(this.config.port, this.config.host || '127.0.0.1');
+        await this.webServer.listen(this.config.port, this.config.host || '0.0.0.0');
     }
 }
