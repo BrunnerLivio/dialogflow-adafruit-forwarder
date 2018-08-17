@@ -1,6 +1,6 @@
 {
   "name": "dialogflow-adafruit-forwarder",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "This application forwards webhook requests from dialogflow to adafruit.",
   "main": "src/index.js",
   "scripts": {
