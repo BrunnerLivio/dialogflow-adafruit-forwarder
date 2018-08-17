@@ -57,7 +57,7 @@ export class AdafruitReceiveService {
             const liftetime = new Date().getTime() - listener.timestamp.getTime();
             if (message) {
                 Logger.info(`Received Message ${Chalk.cyan(message.requestId)} after ${Chalk.green(liftetime.toString())}ms`);
-                listener.resolve(message);
+                listener.resolve(JSON.parse(message));
                 this.removeMessage(message.requestId, index);
                 this.removeListener(listener.requestId, listenerIndex);
             } else if (message && liftetime > TIMEOUT) {

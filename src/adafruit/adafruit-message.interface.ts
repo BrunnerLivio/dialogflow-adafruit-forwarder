@@ -9,5 +9,5 @@ export interface AdafruitMessage {
 
 export interface IncomingAdafruitMessage {
     requestId: string;
-    data: string;
+    data: any;
 }
