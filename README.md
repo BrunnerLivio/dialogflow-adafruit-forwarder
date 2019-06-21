@@ -3,7 +3,7 @@
 **Application which forwards messages from Dialogflow to Adafruit, so
 you do not have to use Google Cloud Functions**
 
-[![Circle CI Status](https://circleci.com/gh/BRUNNEL6/dialogflow-adafruit-forwarder.png?circle-token=77b4c5966fb00e3fb796572cff4be464beeab8c4&style=shield)](https://circleci.com/gh/BRUNNEL6/dialogflow-adafruit-forwarde)
+[![Circle CI Status](https://circleci.com/gh/BRUNNEL6/dialogflow-adafruit-forwarder.png?circle-token=77b4c5966fb00e3fb796572cff4be464beeab8c4&style=shield)](https://circleci.com/gh/BRUNNEL6/dialogflow-adafruit-forwarde) [![Greenkeeper badge](https://badges.greenkeeper.io/BrunnerLivio/dialogflow-adafruit-forwarder.svg)](https://greenkeeper.io/)
 
 ![Architecture](assets/architecture.png)
 
