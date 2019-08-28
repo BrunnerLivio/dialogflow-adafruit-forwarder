@@ -11,7 +11,7 @@
   "author": "Livio Brunner <livio.brunner.lb1@roche.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@koa/cors": "^2.2.2",
+    "@koa/cors": "^3.0.0",
     "@types/figlet": "^1.2.0",
     "axios": "^0.18.0",
     "chalk": "^2.4.1",
