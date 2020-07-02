@@ -38,7 +38,7 @@
     "@types/uuid": "^3.4.3",
     "@types/winston": "^2.3.9",
     "nodemon": "^1.18.3",
-    "typescript": "^3.0.1"
+    "typescript": "^3.9.6"
   },
   "repository": {
     "type": "git",
