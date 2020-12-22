@@ -13,7 +13,7 @@
   "dependencies": {
     "@koa/cors": "^2.2.2",
     "@types/figlet": "^1.2.0",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "chalk": "^2.4.1",
     "figlet": "^1.2.0",
     "fs-extra": "^7.0.0",
